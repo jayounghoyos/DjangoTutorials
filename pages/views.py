@@ -21,6 +21,12 @@ class contactPageView(TemplateView):
 class ProductForm(forms.Form):
     name = forms.CharField(required=True)
     price = forms.FloatField(required=True)
+
+    def clean_price(self):
+        price = self.cleaned_data.get('price')
+        if price <= 0:
+            raise forms.ValidationError("Price must be greater than zero.")
+        return price
 class ProductCreateView(View):
     template_name = 'products/create.html'
     def get(self, request):
@@ -32,7 +38,7 @@ class ProductCreateView(View):
     def post(self, request):
         form = ProductForm(request.POST)
         if form.is_valid():
-            return redirect(form)
+            return redirect("success")
         else:
             viewData = {}
             viewData["title"] = "Create product"
@@ -89,3 +95,14 @@ class ProductShowView(View):
             "product": product
         }
         return render(request, self.template_name, viewData)
+    
+
+class ProductSuccessView(TemplateView):
+    template_name = 'products/success.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Product created"
+        context["subtitle"] = "Success"
+        context["message"] = "Product created successfully!"
+        return context
