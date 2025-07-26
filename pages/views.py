@@ -2,6 +2,22 @@ from django.views.generic import TemplateView
 from django.views import View
 from django import forms
 from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
+class contactPageView(TemplateView):
+    template_name = 'pages/contact.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            "title": "Contact",
+            "email": "jayoungh@eafit.edu.co",
+            "phone": "+57 666 66 66",
+            "address": "Transversal 30 Norte"
+        })
+        return context
+    
 class ProductForm(forms.Form):
     name = forms.CharField(required=True)
     price = forms.FloatField(required=True)
@@ -41,10 +57,10 @@ class AboutPageView(TemplateView):
 
 class Product:
     products = [
-        {"id": "1", "name": "TV", "description": "Best TV"},
-        {"id": "2", "name": "iPhone", "description": "Best iPhone"},
-        {"id": "3", "name": "Chromecast", "description": "Best Chromecast"},
-        {"id": "4", "name": "Glasses", "description": "Best Glasses"}
+        {"id": "1", "name": "TV", "description": "Best TV", "price": 2000000},
+        {"id": "2", "name": "iPhone", "description": "Best iPhone","price": 2000000},
+        {"id": "3", "name": "Chromecast", "description": "Best Chromecast", "price": 10},
+        {"id": "4", "name": "Glasses", "description": "Best Glasses", "price": 20000}
     ]
 
 class ProductIndexView(View):
@@ -62,7 +78,11 @@ class ProductShowView(View):
     template_name = 'products/show.html'
 
     def get(self, request, id):
-        product = Product.products[int(id)-1]
+        try:
+            product = Product.products[int(id) - 1]
+        except (IndexError, ValueError):
+            return HttpResponseRedirect(reverse('home'))
+
         viewData = {
             "title": product["name"] + " - Online Store",
             "subtitle": product["name"] + " - Product information",

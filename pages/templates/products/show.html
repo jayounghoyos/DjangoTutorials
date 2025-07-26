@@ -9,10 +9,11 @@
         </div>
         <div class="col-md-8">
             <div class="card-body">
-                <h5 class="card-title">
+                <h5 class="card-title {% if product.price > 100 %}text-danger{% endif %}">
                     {{product.name}}
                 </h5>
                 <p class="card-text">{{product.description}}</p>
+                <p class="card-text"><strong>Price:</strong> ${{product.price}}</p>
             </div>
         </div>
     </div>
