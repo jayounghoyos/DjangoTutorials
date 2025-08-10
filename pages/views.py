@@ -167,3 +167,15 @@ class CartRemoveAllView(View):
         if 'cart_product_data' in request.session:
             del request.session['cart_product_data']
         return redirect('cart_index')
+
+class ImageViewNoDI(View):
+    template_name = 'imagesnotdi/index.html'
+    def get(self, request):
+        image_url = request.session.get('image_url', '')
+        return render(request, self.template_name, {'image_url': image_url})
+    
+    def post(self, request):
+        image_storage = ImageLocalStorage()
+        image_url = image_storage.store(request)
+        request.session['image_url'] = image_url
+        return redirect('imagenotdi_index')
