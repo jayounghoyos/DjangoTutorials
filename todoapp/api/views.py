@@ -17,11 +17,11 @@ class ToDoListCreate(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Solo ver los ToDos del usuario logueado
+        # Todos de susuarios
         return ToDo.objects.filter(user=self.request.user).order_by('-created')
 
     def perform_create(self, serializer):
-        # Asigna automáticamente el usuario autenticado
+        
         serializer.save(user=self.request.user)
 
 class ToDoRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
@@ -29,7 +29,7 @@ class ToDoRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Only allow the authenticated user to access their own todos
+        
         return ToDo.objects.filter(user=self.request.user)
 
 
@@ -38,11 +38,11 @@ class ToDoToggleComplete(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Only allow the authenticated user to toggle their own todos
+    
         return ToDo.objects.filter(user=self.request.user)
 
     def perform_update(self, serializer):
-        # Flip the completed flag server-side, ignore incoming value
+       
         serializer.instance.completed = not serializer.instance.completed
         serializer.save()
 
@@ -52,7 +52,7 @@ class ToDoToggleComplete(generics.UpdateAPIView):
 def signup(request):
     if request.method == 'POST':
         try:
-            data = JSONParser().parse(request)  # JSON -> dict
+            data = JSONParser().parse(request) 
             user = User.objects.create_user(
                 username=data['username'],
                 password=data['password']
@@ -82,7 +82,7 @@ def login(request):
                 {'error': 'unable to login. check username and password'},
                 status=400
             )
-        # reuse existing token or create a new one
+        
         token, _ = Token.objects.get_or_create(user=user)
         return JsonResponse({'token': str(token)}, status=201)
 
